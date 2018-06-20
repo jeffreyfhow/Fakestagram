@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.jeffreyfhow.fakestagram.DataStructures.FlatPost;
 import com.jeffreyfhow.fakestagram.DataStructures.Post;
 import com.jeffreyfhow.fakestagram.DataStructures.Posts;
 import com.jeffreyfhow.fakestagram.Retrofit.GetDataService;
@@ -18,7 +19,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private String mTokenId;
-    private ArrayList<Post> mPosts;
+    private ArrayList<FlatPost> mPosts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,20 +33,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPosts(String id_token) {
         GetDataService client = ServiceGenerator.createService(GetDataService.class);
-        Call<Posts> call = client.getAllPosts("Bearer " + id_token);
+        Call<ArrayList<FlatPost>> call = client.getAllPosts("Bearer " + id_token);
 
-        call.enqueue(new Callback<Posts>() {
+        call.enqueue(new Callback<ArrayList<FlatPost>>() {
             @Override
-            public void onResponse(Call<Posts> call, Response<Posts> response) {
-                Posts p = response.body();
-                mPosts = p.getPostList();
+            public void onResponse(Call<ArrayList<FlatPost>> call, Response<ArrayList<FlatPost>> response) {
+                mPosts = response.body();
+                Log.v("MainActivity", mPosts.toString());
+
                 refreshDisplay();
             }
 
             @Override
-            public void onFailure(Call<Posts> call, Throwable t) {
+            public void onFailure(Call<ArrayList<FlatPost>> call, Throwable t) {
                 //TODO: Dialog to reroute to AuthenticatorActivity
-                Log.v("AuthenticatorActivity", t.getMessage());
+                Log.v("MainActivity", t.getMessage());
             }
         });
     }
