@@ -7,14 +7,13 @@ import android.util.Log;
 import com.jeffreyfhow.fakestagram.DataStructures.Post;
 import com.jeffreyfhow.fakestagram.DataStructures.Posts;
 import com.jeffreyfhow.fakestagram.Retrofit.GetDataService;
-import com.jeffreyfhow.fakestagram.Retrofit.RetrofitClientInstance;
+import com.jeffreyfhow.fakestagram.Retrofit.ServiceGenerator;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,24 +31,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPosts(String id_token) {
-        Retrofit retrofit = RetrofitClientInstance.getRetrofitInstance();
-        GetDataService client = retrofit.create(GetDataService.class);
+        GetDataService client = ServiceGenerator.createService(GetDataService.class);
         Call<Posts> call = client.getAllPosts("Bearer " + id_token);
 
         call.enqueue(new Callback<Posts>() {
             @Override
             public void onResponse(Call<Posts> call, Response<Posts> response) {
-                Log.v("AuthenticatorActivity", "RESPONDING!!!!");
-                String a = this.getClass().getName();
                 Posts p = response.body();
                 mPosts = p.getPostList();
-                int i = 0;
+                refreshDisplay();
             }
 
             @Override
             public void onFailure(Call<Posts> call, Throwable t) {
+                //TODO: Dialog to reroute to AuthenticatorActivity
                 Log.v("AuthenticatorActivity", t.getMessage());
             }
         });
+    }
+
+    private void refreshDisplay(){
+
     }
 }
