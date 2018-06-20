@@ -1,6 +1,6 @@
-package com.jeffreyfhow.fakestagram;
+package com.jeffreyfhow.fakestagram.Retrofit;
 
-import java.util.List;
+import com.jeffreyfhow.fakestagram.DataStructures.Posts;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

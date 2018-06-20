@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram;
+package com.jeffreyfhow.fakestagram.Retrofit;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

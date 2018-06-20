@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram;
+package com.jeffreyfhow.fakestagram.DataStructures;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
