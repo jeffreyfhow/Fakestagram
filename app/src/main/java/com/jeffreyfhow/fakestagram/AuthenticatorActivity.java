@@ -1,87 +1,67 @@
+
 package com.jeffreyfhow.fakestagram;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
-
-import com.jeffreyfhow.fakestagram.DataStructures.Posts;
-import com.jeffreyfhow.fakestagram.Retrofit.GetDataService;
-import com.jeffreyfhow.fakestagram.Retrofit.RetrofitClientInstance;
-
 import java.util.HashMap;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-
 public class AuthenticatorActivity extends AppCompatActivity {
+
+    public static final String ID_TOKEN_MESSAGE = "com.jeffreyfhow.fakestagram.ID_TOKEN_MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authenticator);
+        initializeWebView();
+    }
 
+    private void initializeWebView(){
         WebView webview = (WebView) findViewById(R.id.webview);
         webview.loadUrl("https://insta23prod.auth.us-west-2.amazoncognito.com/login?response_type=token&client_id=5khm2intordkd1jjr7rbborbfj&redirect_uri=https://www.23andme.com/");
-        final Activity myAct = this;
-        webview.setWebViewClient(new WebViewClient() {
+        webview.setWebViewClient(new WebViewClient(){
+            /*
+            * If id_token found -> start MainActivity
+            * else -> continue with webview
+             */
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Toast.makeText(myAct, "URL LOADING", Toast.LENGTH_SHORT).show();
-
-                HashMap<String, String> data = parseUrlFragment(request.getUrl().getFragment());
-
-                doRetrofit(data.get("id_token"));
+                HashMap<String, String> fragmentMap = parseUrlFragment(request.getUrl().getFragment());
+                if(fragmentMap != null && fragmentMap.containsKey("id_token")){
+                    startMainActivity(fragmentMap.get("id_token"));
+                } else {
+                    return super.shouldOverrideUrlLoading(view, request);
+                }
                 return true;
             }
         });
     }
 
-    public void doRetrofit(String id_token) {
-        Log.v("AuthenticatorActivity", "Doing Retrofit on ID: " + id_token);
-        Retrofit retrofit = RetrofitClientInstance.getRetrofitInstance();
-        GetDataService client = retrofit.create(GetDataService.class);
-        Call<Posts> call = client.getAllPosts("Bearer " + id_token);
-
-// Execute the call asynchronously. Get a positive or negative callback.
-        call.enqueue(new Callback<Posts>() {
-            @Override
-            public void onResponse(Call<Posts> call, Response<Posts> response) {
-                Log.v("AuthenticatorActivity", "RESPONDING!!!!");
-                String a = this.getClass().getName();
-                Posts p = response.body();
-                String b = p.toString();
-
-                Log.v("AuthenticatorActivity", b);
-            }
-
-            @Override
-            public void onFailure(Call<Posts> call, Throwable t) {
-                Log.v("AuthenticatorActivity", t.getMessage());
-            }
-        });
+    private void startMainActivity(String id_token){
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(ID_TOKEN_MESSAGE, id_token);
+        startActivity(intent);
     }
 
-    public HashMap<String, String> parseUrlFragment(String url) {
-
-        HashMap<String, String> output = new HashMap<>();
-
-        String[] keys = url.split("&");
-
-        for (String key : keys) {
-
-            String[] values = key.split("=");
-            output.put(values[0], (values.length > 1 ? values[1] : ""));
-
+    /*
+    * Parses URL fragment pieces into a HashMap of key/value pairs.
+    * Returns null if fragment DNE
+    */
+    private HashMap<String, String> parseUrlFragment(String fragmentStr) {
+        if(fragmentStr == null || fragmentStr.equals("")){
+            return null;
         }
 
-        return output;
-
+        HashMap<String, String> result = new HashMap<>();
+        String[] keys = fragmentStr.split("&");
+        for (String key : keys) {
+            String[] values = key.split("=");
+            result.put(values[0], (values.length > 1 ? values[1] : ""));
+        }
+        return result;
     }
 }

@@ -14,7 +14,7 @@ public class Posts {
         this.data = data;
     }
 
-    public ArrayList<Post> getData() {
+    public ArrayList<Post> getPostList() {
         return data;
     }
 }
