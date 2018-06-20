@@ -24,7 +24,7 @@ public class ServiceGenerator {
 
     private static final String BASE_URL = "https://kqlpe1bymk.execute-api.us-west-2.amazonaws.com/";
 
-    private static JsonDeserializer<ArrayList<FlatPost>> deserializer = getJsonDeserializer(); // will implement in a second
+    private static JsonDeserializer<ArrayList<FlatPost>> deserializer = getJsonDeserializer();
 
     private static Gson gson = new GsonBuilder()
             .registerTypeAdapter(ArrayList.class, deserializer)
@@ -57,41 +57,29 @@ public class ServiceGenerator {
     private static JsonDeserializer<ArrayList<FlatPost>> getJsonDeserializer(){
         return new JsonDeserializer<ArrayList<FlatPost>>() {
             @Override
-            public ArrayList<FlatPost> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            public ArrayList<FlatPost> deserialize(
+                    JsonElement json, Type typeOfT, JsonDeserializationContext context
+            ) throws JsonParseException {
                 ArrayList<FlatPost> res = new ArrayList<>();
-
-                JsonObject root = json.getAsJsonObject();
-
-                JsonArray dataArr = root.get("data").getAsJsonArray();
-//                Log.v("JsonDeserializer", "Entrance: " + dataArr.toString());
+                JsonArray dataArr = json.getAsJsonObject().get("data").getAsJsonArray();
                 for(int i = 0; i < dataArr.size(); i++){
                     JsonObject currPost = dataArr.get(i).getAsJsonObject();
-                    String postId = currPost.get("id").getAsString();
                     JsonObject user = currPost.get("user").getAsJsonObject();
-                    Long userId = user.get("id").getAsLong();
-                    String username = user.get("username").getAsString();
-                    String profilePictureUrl = user.get("profile_picture").getAsString();
-
-                    Long likeCnt = currPost.get("likes").getAsJsonObject().get("count").getAsLong();
-                    Long timeCreated = currPost.get("created_time").getAsLong();
-
                     JsonObject imageData = currPost.get("images").getAsJsonObject();
-                    String imgUrlStd = imageData.get("standard_resolution").getAsJsonObject()
-                            .get("url").getAsString();
-                    String imgUrlThumb = imageData.get("thumbnail").getAsJsonObject()
-                            .get("url").getAsString();
-                    String imgLowRes = imageData.get("low_resolution").getAsJsonObject()
-                            .get("url").getAsString();
+
                     res.add(new FlatPost(
-                            postId,
-                            userId,
-                            username,
-                            profilePictureUrl,
-                            likeCnt,
-                            timeCreated,
-                            imgUrlStd,
-                            imgUrlThumb,
-                            imgLowRes
+                            currPost.get("id").getAsString(),
+                            user.get("id").getAsLong(),
+                            user.get("username").getAsString(),
+                            user.get("profile_picture").getAsString(),
+                            currPost.get("likes").getAsJsonObject().get("count").getAsLong(),
+                            currPost.get("created_time").getAsLong(),
+                            imageData.get("standard_resolution").getAsJsonObject()
+                                    .get("url").getAsString(),
+                            imageData.get("thumbnail").getAsJsonObject()
+                                    .get("url").getAsString(),
+                            imageData.get("low_resolution").getAsJsonObject()
+                                    .get("url").getAsString()
                     ));
                 }
                 return res;

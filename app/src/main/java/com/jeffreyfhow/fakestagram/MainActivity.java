@@ -3,10 +3,10 @@ package com.jeffreyfhow.fakestagram;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.GridView;
 
 import com.jeffreyfhow.fakestagram.DataStructures.FlatPost;
 import com.jeffreyfhow.fakestagram.DataStructures.Post;
-import com.jeffreyfhow.fakestagram.DataStructures.Posts;
 import com.jeffreyfhow.fakestagram.Retrofit.GetDataService;
 import com.jeffreyfhow.fakestagram.Retrofit.ServiceGenerator;
 
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String mTokenId;
     private ArrayList<FlatPost> mPosts;
+    private GridView gridview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         mTokenId = getIntent().getStringExtra(AuthenticatorActivity.ID_TOKEN_MESSAGE);
         getPosts(mTokenId);
 
+        gridview = (GridView) findViewById(R.id.gridview);
     }
 
     private void getPosts(String id_token) {
@@ -39,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ArrayList<FlatPost>> call, Response<ArrayList<FlatPost>> response) {
                 mPosts = response.body();
-                Log.v("MainActivity", mPosts.toString());
-
                 refreshDisplay();
             }
 
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshDisplay(){
-
+        PostAdapter adapter = new PostAdapter(this, mPosts);
+        gridview.setAdapter(adapter);
     }
 }
