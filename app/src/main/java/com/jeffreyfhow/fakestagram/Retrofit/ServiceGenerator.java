@@ -1,7 +1,5 @@
 package com.jeffreyfhow.fakestagram.Retrofit;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -10,7 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.jeffreyfhow.fakestagram.DataStructures.FlatPost;
+import com.jeffreyfhow.fakestagram.Post;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ public class ServiceGenerator {
 
     private static final String BASE_URL = "https://kqlpe1bymk.execute-api.us-west-2.amazonaws.com/";
 
-    private static JsonDeserializer<ArrayList<FlatPost>> deserializer = getJsonDeserializer();
+    private static JsonDeserializer<ArrayList<Post>> deserializer = getJsonDeserializer();
 
     private static Gson gson = new GsonBuilder()
             .registerTypeAdapter(ArrayList.class, deserializer)
@@ -54,20 +52,20 @@ public class ServiceGenerator {
         return retrofit.create(serviceClass);
     }
 
-    private static JsonDeserializer<ArrayList<FlatPost>> getJsonDeserializer(){
-        return new JsonDeserializer<ArrayList<FlatPost>>() {
+    private static JsonDeserializer<ArrayList<Post>> getJsonDeserializer(){
+        return new JsonDeserializer<ArrayList<Post>>() {
             @Override
-            public ArrayList<FlatPost> deserialize(
+            public ArrayList<Post> deserialize(
                     JsonElement json, Type typeOfT, JsonDeserializationContext context
             ) throws JsonParseException {
-                ArrayList<FlatPost> res = new ArrayList<>();
+                ArrayList<Post> res = new ArrayList<>();
                 JsonArray dataArr = json.getAsJsonObject().get("data").getAsJsonArray();
                 for(int i = 0; i < dataArr.size(); i++){
                     JsonObject currPost = dataArr.get(i).getAsJsonObject();
                     JsonObject user = currPost.get("user").getAsJsonObject();
                     JsonObject imageData = currPost.get("images").getAsJsonObject();
 
-                    res.add(new FlatPost(
+                    res.add(new Post(
                             currPost.get("id").getAsString(),
                             user.get("id").getAsLong(),
                             user.get("username").getAsString(),
@@ -79,7 +77,8 @@ public class ServiceGenerator {
                             imageData.get("thumbnail").getAsJsonObject()
                                     .get("url").getAsString(),
                             imageData.get("low_resolution").getAsJsonObject()
-                                    .get("url").getAsString()
+                                    .get("url").getAsString(),
+                            currPost.get("user_has_liked").getAsBoolean()
                     ));
                 }
                 return res;

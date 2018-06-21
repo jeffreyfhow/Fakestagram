@@ -1,6 +1,6 @@
-package com.jeffreyfhow.fakestagram.DataStructures;
+package com.jeffreyfhow.fakestagram;
 
-public class FlatPost {
+public class Post {
 
     private String postId;
     private Long userId;
@@ -14,7 +14,11 @@ public class FlatPost {
     private String imgUrlThumb;
     private String imgLowRes;
 
-    public FlatPost(String postId, Long userId, String username, String profilePictureUrl, Long likeCnt, Long timeCreated, String imgUrlStd, String imgUrlThumb, String imgLowRes) {
+    private Boolean userHasLiked;
+
+    public Post(String postId, Long userId, String username, String profilePictureUrl, Long likeCnt,
+                Long timeCreated, String imgUrlStd, String imgUrlThumb, String imgLowRes,
+                Boolean userHasLiked) {
         this.postId = postId;
         this.userId = userId;
         this.username = username;
@@ -24,6 +28,7 @@ public class FlatPost {
         this.imgUrlStd = imgUrlStd;
         this.imgUrlThumb = imgUrlThumb;
         this.imgLowRes = imgLowRes;
+        this.userHasLiked = userHasLiked;
     }
 
     public String getPostId() {
@@ -66,4 +71,13 @@ public class FlatPost {
     public String getImgLowRes() {
         return imgLowRes;
     }
+
+    public Boolean getUserHasLiked() {
+        return userHasLiked;
+    }
+
+    public void setUserHasLiked(Boolean userHasLiked) {
+        this.userHasLiked = userHasLiked;
+    }
+
 }

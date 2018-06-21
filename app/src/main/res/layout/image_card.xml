@@ -43,11 +43,11 @@
             card_view:layout_constraintVertical_bias="0">
 
             <ImageView
-                android:id="@+id/like_button"
+                android:id="@+id/like_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                card_view:srcCompat="@android:drawable/btn_star_big_off" />
+                card_view:srcCompat="@android:drawable/star_on" />
 
             <TextView
                 android:id="@+id/likes_text"
