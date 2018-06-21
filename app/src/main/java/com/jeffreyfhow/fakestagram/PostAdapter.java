@@ -17,6 +17,8 @@ import java.util.List;
 
 public class PostAdapter extends ArrayAdapter<FlatPost> {
 
+    protected boolean hasRecencyText = false;
+
     public PostAdapter(@NonNull Context context, @NonNull List<FlatPost> objects) {
         super(context, 0, objects);
     }
@@ -32,10 +34,14 @@ public class PostAdapter extends ArrayAdapter<FlatPost> {
         FlatPost currentPost = getItem(position);
 
         TextView likesText = (TextView) gridItemView.findViewById(R.id.likes_text);
-        likesText.setText(currentPost.getLikeCnt().toString());
+        likesText.setText(currentPost.getLikeCnt().toString() + " Likes");
 
         TextView recencyText = (TextView) gridItemView.findViewById(R.id.recency_text);
-        recencyText.setText(currentPost.getTimeCreated().toString());
+        if(hasRecencyText){
+            recencyText.setText(currentPost.getTimeCreated().toString());
+        } else {
+            recencyText.setVisibility(View.GONE);
+        }
 
         ImageView image = gridItemView.findViewById(R.id.card_image);
         Glide
@@ -44,5 +50,9 @@ public class PostAdapter extends ArrayAdapter<FlatPost> {
                 .into(image);
 
         return gridItemView;
+    }
+
+    public void setHasRecencyText(boolean hasRecencyText) {
+        this.hasRecencyText = hasRecencyText;
     }
 }
