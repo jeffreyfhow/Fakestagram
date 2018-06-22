@@ -7,13 +7,13 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -41,12 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
     private String mTokenId;
     private ArrayList<Post> mPosts;
-    private ArrayList<Post> mDetailPosts;
-    private GridView mGridview;
+    private RecyclerView mGridview;
     private boolean mIsDetailView = false;
-    private PostAdapter currAdapter;
     private String profileURL;
     private Menu menu;
+
+    private GridLayoutManager gridLayoutManager;
+    private LinearLayoutManager linearLayoutManager;
+    private PostAdapter2 adapter;
+    int detailIdx = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,15 @@ public class MainActivity extends AppCompatActivity {
 
         mDetailPosts = new ArrayList<>();
 
-        mGridview = (GridView) findViewById(R.id.gridview);
+        mGridview = (RecyclerView) findViewById(R.id.post_recycler_view);
+
+        adapter = new PostAdapter2(this);
+        mGridview.setAdapter(adapter);
+        gridLayoutManager = new GridLayoutManager(this, 2);
+
+        linearLayoutManager = new LinearLayoutManager(this);
+
+        mGridview.setLayoutManager(gridLayoutManager);
     }
 
 
@@ -100,34 +111,40 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayGridView() {
         mIsDetailView = false;
-        currAdapter = new PostAdapter(this, mPosts);
-        mGridview.setAdapter(currAdapter);
-        mGridview.setNumColumns(2);
-        mGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        currAdapter = new PostAdapter(this, mPosts);
+        mGridview.setLayoutManager(gridLayoutManager);
+        adapter.setHasRecencyText(false);
+//        mGridview.setAdapter(currAdapter);
+        adapter.update(mPosts);
+        adapter.setListener(new PostAdapter2.Listener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                displayDetailView(i);
+            public void onClick(int position) {
+                displayDetailView(position);
             }
         });
+
     }
 
     private void displayDetailView(final int pos) {
         mIsDetailView = true;
-        mDetailPosts.clear();
-        mDetailPosts.add(mPosts.get(pos));
-        currAdapter = new PostAdapter(this, mDetailPosts);
-        currAdapter.setHasRecencyText(true);
-        mGridview.setNumColumns(1);
-        mGridview.setAdapter(currAdapter);
-        mGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        adapter.setHasRecencyText(true);
+        mGridview.setLayoutManager(linearLayoutManager);
+        detailIdx = pos;
+        adapter.update(mPosts.get(pos));
+        adapter.setListener(new PostAdapter2.Listener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                tryLikePhoto(pos);
+            public void onClick(int position) {
+                if(detailIdx >= 0){
+                    tryLikePhoto(detailIdx);
+                }
             }
         });
+
     }
 
     private void tryLikePhoto(int pos) {
+
         Post p = mPosts.get(pos);
         boolean hasLiked = p.getUserHasLiked();
         long likeCnt = p.getLikeCnt();
@@ -140,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             p.setLikeCnt(++likeCnt);
             sendLikeRequest(p.getPostId());
         }
-        currAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
         mGridview.refreshDrawableState();
     }
 
