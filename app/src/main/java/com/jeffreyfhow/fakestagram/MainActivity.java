@@ -22,18 +22,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import com.jeffreyfhow.fakestagram.Network.NetworkService;
-import com.jeffreyfhow.fakestagram.Network.ServiceGenerator;
+import com.jeffreyfhow.fakestagram.Network.NetworkRequester;
+
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private PostAdapter adapter;
     int detailIdx = -1;
 
+    private NetworkRequester networkRequester;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +58,10 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         mTokenId = getIntent().getStringExtra(AuthenticatorActivity.ID_TOKEN_MESSAGE);
-        getPosts(mTokenId);
+
+        networkRequester = new NetworkRequester(this);
+        networkRequester.sendGetPostsRequest(mTokenId);
+
         Log.v("MainActivity", "Token: " + mTokenId);
 
         recyclerView = findViewById(R.id.post_recycler_view);
@@ -72,37 +73,24 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(gridLayoutManager);
+
+
     }
 
 
-    private void getPosts(String id_token) {
-        NetworkService client = ServiceGenerator.createService(NetworkService.class);
-        Call<ArrayList<Post>> call = client.getAllPosts("Bearer " + id_token);
+    public void setPosts(ArrayList<Post> posts){
+        mPosts = posts;
 
-        call.enqueue(new Callback<ArrayList<Post>>() {
+        profileURL = mPosts.get(0).getProfilePictureUrl();
+        setUserIcon();
+        Collections.sort(mPosts, new Comparator<Post>() {
             @Override
-            public void onResponse(Call<ArrayList<Post>> call, Response<ArrayList<Post>> response) {
-                mPosts = response.body();
-
-                profileURL = mPosts.get(0).getProfilePictureUrl();
-                setUserIcon();
-                Collections.sort(mPosts, new Comparator<Post>() {
-                    @Override
-                    public int compare(Post p1, Post p2) {
-                        return p1.getDateCreated().isAfter(p2.getDateCreated()) ? -1 : 1;
-                    }
-                });
-
-                displayGridView();
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<Post>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error retrieving posts. Please try again.", Toast.LENGTH_SHORT).show();
-                startAuthenticatorActivity();
-                Log.v("MainActivity", t.getMessage());
+            public int compare(Post p1, Post p2) {
+                return p1.getDateCreated().isAfter(p2.getDateCreated()) ? -1 : 1;
             }
         });
+
+        displayGridView();
     }
 
     private void displayGridView() {
@@ -137,53 +125,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void tryLikePhoto(int pos) {
-
         Post p = mPosts.get(pos);
         boolean hasLiked = p.getUserHasLiked();
         long likeCnt = p.getLikeCnt();
         if (hasLiked) {
             p.setUserHasLiked(false);
             p.setLikeCnt(--likeCnt);
-            sendUnlikeRequest(p.getPostId());
+            networkRequester.sendUnlikeRequest(mTokenId, p.getPostId());
         } else {
             p.setUserHasLiked(true);
             p.setLikeCnt(++likeCnt);
-            sendLikeRequest(p.getPostId());
+            networkRequester.sendLikeRequest(mTokenId, p.getPostId());
         }
         adapter.notifyDataSetChanged();
         recyclerView.refreshDrawableState();
-    }
-
-    private void sendLikeRequest(String id) {
-        NetworkService client = ServiceGenerator.createService(NetworkService.class);
-        Call<Void> call = client.postLike("Bearer " + mTokenId, id);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(MainActivity.this, "Like Posted Response - Success.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.v("MainActivity", t.getMessage());
-            }
-        });
-    }
-
-    private void sendUnlikeRequest(String id) {
-        NetworkService client = ServiceGenerator.createService(NetworkService.class);
-        Call<Void> call = client.deleteLike("Bearer " + mTokenId, id);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(MainActivity.this, "Like Deleted Response - Success", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.v("MainActivity", t.getMessage());
-            }
-        });
     }
 
     @Override
@@ -227,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
-    private void startAuthenticatorActivity() {
+    public void startAuthenticatorActivity() {
         Intent intent = new Intent(this, AuthenticatorActivity.class);
         startActivity(intent);
     }
