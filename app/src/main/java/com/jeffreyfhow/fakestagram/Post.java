@@ -1,5 +1,10 @@
 package com.jeffreyfhow.fakestagram;
 
+import org.joda.time.LocalDateTime;
+import org.joda.time.Period;
+import org.joda.time.Weeks;
+
+
 public class Post {
 
     private String postId;
@@ -8,7 +13,7 @@ public class Post {
     private String profilePictureUrl;
 
     private Long likeCnt;
-    private Long timeCreated;
+    private LocalDateTime dateCreated;
 
     private String imgUrlStd;
     private String imgUrlThumb;
@@ -17,14 +22,15 @@ public class Post {
     private Boolean userHasLiked;
 
     public Post(String postId, Long userId, String username, String profilePictureUrl, Long likeCnt,
-                Long timeCreated, String imgUrlStd, String imgUrlThumb, String imgLowRes,
+                LocalDateTime dateCreated, String imgUrlStd, String imgUrlThumb, String imgLowRes,
                 Boolean userHasLiked) {
         this.postId = postId;
         this.userId = userId;
         this.username = username;
         this.profilePictureUrl = profilePictureUrl;
         this.likeCnt = likeCnt;
-        this.timeCreated = timeCreated;
+        this.dateCreated = dateCreated;
+//        Log.v("MainActivity", dateCreated.toString());
         this.imgUrlStd = imgUrlStd;
         this.imgUrlThumb = imgUrlThumb;
         this.imgLowRes = imgLowRes;
@@ -56,8 +62,37 @@ public class Post {
         this.likeCnt = likeCnt;
     }
 
-    public Long getTimeCreated() {
-        return timeCreated;
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public String getRecencyString(){
+        LocalDateTime now = LocalDateTime.now();
+
+        Weeks weeksDuration = Weeks.weeksBetween(dateCreated, now);
+        int numWeeks = weeksDuration.getWeeks();
+        if(numWeeks > 0){
+            return numWeeks + "w ago";
+        }
+
+        Period period = new Period(dateCreated, now);
+
+        int numDays = period.getDays();
+        if(numDays > 0){
+            return numDays + "d ago";
+        }
+
+        int numHours = period.getHours();
+        if(numHours > 0){
+            return numHours + "h ago";
+        }
+
+        int numMins = period.getMinutes();
+        if(numMins > 0){
+            return numMins + "m ago";
+        }
+
+        return period.getSeconds() + "s ago";
     }
 
     public String getImgUrlStd() {

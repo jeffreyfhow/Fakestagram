@@ -10,6 +10,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.jeffreyfhow.fakestagram.Post;
 
+import org.joda.time.LocalDateTime;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -71,7 +73,7 @@ public class ServiceGenerator {
                             user.get("username").getAsString(),
                             user.get("profile_picture").getAsString(),
                             currPost.get("likes").getAsJsonObject().get("count").getAsLong(),
-                            currPost.get("created_time").getAsLong(),
+                            new LocalDateTime(1000*currPost.get("created_time").getAsLong()),
                             imageData.get("standard_resolution").getAsJsonObject()
                                     .get("url").getAsString(),
                             imageData.get("thumbnail").getAsJsonObject()

@@ -38,7 +38,7 @@ public class PostAdapter extends ArrayAdapter<Post> {
 
         TextView recencyText = (TextView) gridItemView.findViewById(R.id.recency_text);
         if(hasRecencyText){
-            recencyText.setText(currentPost.getTimeCreated().toString());
+            recencyText.setText(currentPost.getRecencyString().toString());
         } else {
             recencyText.setVisibility(View.GONE);
         }
