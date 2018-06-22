@@ -1,3 +1,4 @@
 # Fakestagram
-Temporary Code Exercise
+Temporary Code Exercise.
+
 See "Fakestagram Documentation.pdf"
