@@ -34,14 +34,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></android.support.v7.widget.RecyclerView>
-        <!--<GridView-->
-            <!--android:id="@+id/gridview"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_margin="8dp"-->
-            <!--android:gravity="center"-->
-            <!--android:horizontalSpacing="8dp"-->
-            <!--android:numColumns="auto_fit"-->
-            <!--android:verticalSpacing="8dp" />-->
+
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

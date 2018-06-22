@@ -14,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +30,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+/**
+ * Main Scene where all the functionality happens
+ */
 public class MainActivity extends AppCompatActivity {
 
     private String mTokenId;
@@ -47,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     private NetworkRequester networkRequester;
 
+    // -----------------------------------------------------------
+    //                      INITIALIZATION
+    // -----------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,11 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(gridLayoutManager);
 
-
     }
 
-
-    public void setPosts(ArrayList<Post> posts){
+    public void initializePosts(ArrayList<Post> posts){
         mPosts = posts;
 
         profileURL = mPosts.get(0).getProfilePictureUrl();
@@ -93,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
         displayGridView();
     }
 
+    // -----------------------------------------------------------
+    //                    FUNCTIONALITY
+    // -----------------------------------------------------------
     private void displayGridView() {
         mIsDetailView = false;
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -121,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void tryLikePhoto(int pos) {
@@ -141,26 +146,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.refreshDrawableState();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        this.menu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_logout:
-                logOut();
-                break;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    // -----------------------------------------------------------
+    //                      EXITING
+    // -----------------------------------------------------------
     private void logOut() {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://insta23prod.auth.us-west-2.amazoncognito.com/logout?response_type=token&client_id=5khm2intordkd1jjr7rbborbfj&logout_uri=https://www.23andme.com/";
@@ -185,6 +173,29 @@ public class MainActivity extends AppCompatActivity {
     public void startAuthenticatorActivity() {
         Intent intent = new Intent(this, AuthenticatorActivity.class);
         startActivity(intent);
+    }
+
+    // -----------------------------------------------------------
+    //                      TOOLBAR MENU
+    // -----------------------------------------------------------
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        this.menu = menu;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_logout:
+                logOut();
+                break;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -218,5 +229,4 @@ public class MainActivity extends AppCompatActivity {
         Picasso.get().load(profileURL).into(target);
 
     }
-
 }

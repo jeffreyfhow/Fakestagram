@@ -3,7 +3,6 @@ package com.jeffreyfhow.fakestagram;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * RecyclerView Adapter that binds Posts to CardViews
+ */
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
@@ -72,7 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        Log.v("PostAdapter", "ON BIND " + getItemCount());
+
         Post currentPost = postList.get(position);
 
         holder.likesTextView.setText(currentPost.getLikeCnt() + " Likes");
@@ -106,7 +108,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-
         return postList.size();
     }
 

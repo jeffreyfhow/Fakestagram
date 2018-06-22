@@ -20,6 +20,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Helper Class to assemble Retrofit calls and deserialize jsons properly
+ */
 public class ServiceGenerator {
 
     private static final String BASE_URL = "https://kqlpe1bymk.execute-api.us-west-2.amazonaws.com/";

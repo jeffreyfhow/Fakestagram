@@ -1,6 +1,5 @@
 package com.jeffreyfhow.fakestagram.Network;
 
-import android.net.Network;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +12,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Class used to send network requests.
+ */
 public class NetworkRequester {
 
     private MainActivity mainActivity;
@@ -28,7 +30,7 @@ public class NetworkRequester {
         call.enqueue(new Callback<ArrayList<Post>>() {
             @Override
             public void onResponse(Call<ArrayList<Post>> call, Response<ArrayList<Post>> response) {
-                mainActivity.setPosts(response.body());
+                mainActivity.initializePosts(response.body());
             }
 
             @Override

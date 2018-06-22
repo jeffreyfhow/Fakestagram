@@ -5,6 +5,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+/**
+ * Utility class used to load url images from Glide into ImageViews
+ */
 public class URLImageLoader {
 
     private static URLImageLoader instance = null;

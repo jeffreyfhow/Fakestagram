@@ -4,7 +4,9 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.Weeks;
 
-
+/**
+ * Data Model for a single Fakestagram Post
+ */
 public class Post {
 
     private String postId;
@@ -30,7 +32,6 @@ public class Post {
         this.profilePictureUrl = profilePictureUrl;
         this.likeCnt = likeCnt;
         this.dateCreated = dateCreated;
-//        Log.v("MainActivity", dateCreated.toString());
         this.imgUrlStd = imgUrlStd;
         this.imgUrlThumb = imgUrlThumb;
         this.imgLowRes = imgLowRes;

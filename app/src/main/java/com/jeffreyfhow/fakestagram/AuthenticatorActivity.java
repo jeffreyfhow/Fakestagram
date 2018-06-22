@@ -9,6 +9,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import java.util.HashMap;
 
+/**
+ * Initial screen to sign in
+ */
 public class AuthenticatorActivity extends AppCompatActivity {
 
     public static final String ID_TOKEN_MESSAGE = "com.jeffreyfhow.fakestagram.ID_TOKEN_MESSAGE";
