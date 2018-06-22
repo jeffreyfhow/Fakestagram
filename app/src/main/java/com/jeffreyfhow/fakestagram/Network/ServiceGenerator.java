@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram.Retrofit;
+package com.jeffreyfhow.fakestagram.Network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

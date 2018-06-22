@@ -22,10 +22,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import com.jeffreyfhow.fakestagram.Retrofit.DeleteLikeService;
-import com.jeffreyfhow.fakestagram.Retrofit.GetPostsService;
-import com.jeffreyfhow.fakestagram.Retrofit.PostLikeService;
-import com.jeffreyfhow.fakestagram.Retrofit.ServiceGenerator;
+import com.jeffreyfhow.fakestagram.Network.NetworkService;
+import com.jeffreyfhow.fakestagram.Network.ServiceGenerator;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -41,14 +39,14 @@ public class MainActivity extends AppCompatActivity {
 
     private String mTokenId;
     private ArrayList<Post> mPosts;
-    private RecyclerView mGridview;
+    private RecyclerView recyclerView;
     private boolean mIsDetailView = false;
     private String profileURL;
     private Menu menu;
 
     private GridLayoutManager gridLayoutManager;
     private LinearLayoutManager linearLayoutManager;
-    private PostAdapter2 adapter;
+    private PostAdapter adapter;
     int detailIdx = -1;
 
     @Override
@@ -65,22 +63,20 @@ public class MainActivity extends AppCompatActivity {
         getPosts(mTokenId);
         Log.v("MainActivity", "Token: " + mTokenId);
 
-        mDetailPosts = new ArrayList<>();
+        recyclerView = findViewById(R.id.post_recycler_view);
 
-        mGridview = (RecyclerView) findViewById(R.id.post_recycler_view);
-
-        adapter = new PostAdapter2(this);
-        mGridview.setAdapter(adapter);
+        adapter = new PostAdapter(this);
+        recyclerView.setAdapter(adapter);
         gridLayoutManager = new GridLayoutManager(this, 2);
 
         linearLayoutManager = new LinearLayoutManager(this);
 
-        mGridview.setLayoutManager(gridLayoutManager);
+        recyclerView.setLayoutManager(gridLayoutManager);
     }
 
 
     private void getPosts(String id_token) {
-        GetPostsService client = ServiceGenerator.createService(GetPostsService.class);
+        NetworkService client = ServiceGenerator.createService(NetworkService.class);
         Call<ArrayList<Post>> call = client.getAllPosts("Bearer " + id_token);
 
         call.enqueue(new Callback<ArrayList<Post>>() {
@@ -111,28 +107,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayGridView() {
         mIsDetailView = false;
-//        currAdapter = new PostAdapter(this, mPosts);
-        mGridview.setLayoutManager(gridLayoutManager);
+        recyclerView.setLayoutManager(gridLayoutManager);
         adapter.setHasRecencyText(false);
-//        mGridview.setAdapter(currAdapter);
         adapter.update(mPosts);
-        adapter.setListener(new PostAdapter2.Listener() {
+        adapter.setListener(new PostAdapter.Listener() {
             @Override
             public void onClick(int position) {
                 displayDetailView(position);
             }
         });
-
     }
 
     private void displayDetailView(final int pos) {
         mIsDetailView = true;
 
         adapter.setHasRecencyText(true);
-        mGridview.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(linearLayoutManager);
         detailIdx = pos;
         adapter.update(mPosts.get(pos));
-        adapter.setListener(new PostAdapter2.Listener() {
+        adapter.setListener(new PostAdapter.Listener() {
             @Override
             public void onClick(int position) {
                 if(detailIdx >= 0){
@@ -158,11 +151,11 @@ public class MainActivity extends AppCompatActivity {
             sendLikeRequest(p.getPostId());
         }
         adapter.notifyDataSetChanged();
-        mGridview.refreshDrawableState();
+        recyclerView.refreshDrawableState();
     }
 
     private void sendLikeRequest(String id) {
-        PostLikeService client = ServiceGenerator.createService(PostLikeService.class);
+        NetworkService client = ServiceGenerator.createService(NetworkService.class);
         Call<Void> call = client.postLike("Bearer " + mTokenId, id);
         call.enqueue(new Callback<Void>() {
             @Override
@@ -178,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendUnlikeRequest(String id) {
-        DeleteLikeService client = ServiceGenerator.createService(DeleteLikeService.class);
+        NetworkService client = ServiceGenerator.createService(NetworkService.class);
         Call<Void> call = client.deleteLike("Bearer " + mTokenId, id);
         call.enqueue(new Callback<Void>() {
             @Override
