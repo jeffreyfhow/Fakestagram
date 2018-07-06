@@ -2,21 +2,22 @@
 package com.jeffreyfhow.fakestagram;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.jeffreyfhow.fakestagram.data.Constants;
+import com.jeffreyfhow.fakestagram.utility.ActivityStarter;
+
 import java.util.HashMap;
 
 /**
  * Initial screen to sign in
  */
 public class AuthenticatorActivity extends AppCompatActivity {
-
-    public static final String ID_TOKEN_MESSAGE = "com.jeffreyfhow.fakestagram.ID_TOKEN_MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,19 +39,16 @@ public class AuthenticatorActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             HashMap<String, String> fragmentMap = parseUrlFragment(request.getUrl().getFragment());
             if(fragmentMap != null && fragmentMap.containsKey("id_token")){
-                startMainActivity(fragmentMap.get("id_token"));
+                ActivityStarter.startMainActivity(
+                    AuthenticatorActivity.this,
+                    fragmentMap.get("id_token")
+                );
             } else {
                 return super.shouldOverrideUrlLoading(view, request);
             }
             return true;
             }
         });
-    }
-
-    private void startMainActivity(String id_token){
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(ID_TOKEN_MESSAGE, id_token);
-        startActivity(intent);
     }
 
     /*

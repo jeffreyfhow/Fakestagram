@@ -11,6 +11,7 @@ import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.network.helper.InterceptorFactory;
 import com.jeffreyfhow.fakestagram.network.helper.OkHttpClientManager;
 import com.jeffreyfhow.fakestagram.network.helper.RetrofitManager;
+import com.jeffreyfhow.fakestagram.utility.ActivityStarter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +98,7 @@ public class NetworkRequester {
             @Override
             public void onFailure(Call<ArrayList<Post>> call, Throwable t) {
                 Toast.makeText(mainActivity, "Error retrieving posts. Please try again.", Toast.LENGTH_SHORT).show();
-                mainActivity.startAuthenticatorActivity();
+                ActivityStarter.startAuthenticatorActivity(mainActivity);
                 Log.v("MainActivity", t.getMessage());
             }
         });
@@ -138,13 +139,13 @@ public class NetworkRequester {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                mainActivity.startAuthenticatorActivity();
+                ActivityStarter.startAuthenticatorActivity(mainActivity);
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.d(this.getClass().getSimpleName(), t.getMessage());
-                mainActivity.startAuthenticatorActivity();
+                ActivityStarter.startAuthenticatorActivity(mainActivity);
             }
         });
     }

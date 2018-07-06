@@ -1,12 +1,11 @@
 package com.jeffreyfhow.fakestagram;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +14,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
-
 import com.jeffreyfhow.fakestagram.data.PostAdapter;
 import com.jeffreyfhow.fakestagram.network.NetworkRequester;
 import com.squareup.picasso.Picasso;
@@ -52,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     // -----------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        mTokenId = getIntent().getStringExtra(AuthenticatorActivity.ID_TOKEN_MESSAGE);
+        mTokenId = getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE);
 
         networkRequester = new NetworkRequester(this);
         networkRequester.sendGetPostsRequest(mTokenId);
@@ -146,15 +146,6 @@ public class MainActivity extends AppCompatActivity {
         }
         adapter.notifyDataSetChanged();
         recyclerView.refreshDrawableState();
-    }
-
-    // -----------------------------------------------------------
-    //                      EXITING
-    // -----------------------------------------------------------
-    @DebugLog
-    public void startAuthenticatorActivity() {
-        Intent intent = new Intent(this, AuthenticatorActivity.class);
-        startActivity(intent);
     }
 
     // -----------------------------------------------------------

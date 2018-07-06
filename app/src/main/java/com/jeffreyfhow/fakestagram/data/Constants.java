@@ -8,4 +8,6 @@ public class Constants {
     public static final String CLIENT_ID = "5khm2intordkd1jjr7rbborbfj";
     public static final String LOGOUT_URL = "https://www.23andme.com/";
     public static final String RESPONSE_TYPE = "token";
+
+    public static final String ID_TOKEN_MESSAGE = "com.jeffreyfhow.fakestagram.ID_TOKEN_MESSAGE";
 }
