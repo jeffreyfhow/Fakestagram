@@ -15,14 +15,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.jeffreyfhow.fakestagram.data.Post;
 
-import com.jeffreyfhow.fakestagram.Network.NetworkRequester;
-
+import com.jeffreyfhow.fakestagram.data.PostAdapter;
+import com.jeffreyfhow.fakestagram.network.NetworkRequester;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -149,27 +145,6 @@ public class MainActivity extends AppCompatActivity {
     // -----------------------------------------------------------
     //                      EXITING
     // -----------------------------------------------------------
-    private void logOut() {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://insta23prod.auth.us-west-2.amazoncognito.com/logout?response_type=token&client_id=5khm2intordkd1jjr7rbborbfj&logout_uri=https://www.23andme.com/";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new com.android.volley.Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        startAuthenticatorActivity();
-                    }
-                },
-                new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        startAuthenticatorActivity();
-                    }
-                });
-
-        queue.add(stringRequest);
-    }
-
     public void startAuthenticatorActivity() {
         Intent intent = new Intent(this, AuthenticatorActivity.class);
         startActivity(intent);
@@ -189,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_logout:
-                logOut();
+                networkRequester.logOut();
                 break;
             case android.R.id.home:
                 onBackPressed();
@@ -203,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         if (mIsDetailView) {
             displayGridView();
         } else {
-            logOut();
+            networkRequester.logOut();
         }
     }
 

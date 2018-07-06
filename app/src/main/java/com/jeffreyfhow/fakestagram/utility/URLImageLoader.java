@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram;
+package com.jeffreyfhow.fakestagram.utility;
 
 import android.content.Context;
 import android.widget.ImageView;

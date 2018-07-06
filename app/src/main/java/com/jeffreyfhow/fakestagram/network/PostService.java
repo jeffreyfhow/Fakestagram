@@ -1,6 +1,6 @@
-package com.jeffreyfhow.fakestagram.Network;
+package com.jeffreyfhow.fakestagram.network;
 
-import com.jeffreyfhow.fakestagram.Post;
+import com.jeffreyfhow.fakestagram.data.Post;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface NetworkService {
+public interface PostService {
     @GET("Prod/users/self/media/recent")
     Call<ArrayList<Post>> getAllPosts(@Header("Authorization") String authorization);
 

@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram;
+package com.jeffreyfhow.fakestagram.data;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.jeffreyfhow.fakestagram.R;
+import com.jeffreyfhow.fakestagram.utility.URLImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +36,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
     }
 
-    interface Listener {
+    public interface Listener {
         void onClick(int position);
     }
 

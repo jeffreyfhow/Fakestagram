@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram;
+package com.jeffreyfhow.fakestagram.data;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
@@ -39,7 +39,6 @@ public class Post {
     }
 
     public String getPostId() {
-
         return postId;
     }
 
