@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import hugo.weaving.DebugLog;
+
 /**
  * Main Scene where all the functionality happens
  */
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @DebugLog
     public void initializePosts(ArrayList<Post> posts){
         mPosts = posts;
 
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     // -----------------------------------------------------------
     //                    FUNCTIONALITY
     // -----------------------------------------------------------
+    @DebugLog
     private void displayGridView() {
         mIsDetailView = false;
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -108,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @DebugLog
     private void displayDetailView(final int pos) {
         mIsDetailView = true;
 
@@ -125,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @DebugLog
     private void tryLikePhoto(int pos) {
         Post p = mPosts.get(pos);
         boolean hasLiked = p.getUserHasLiked();
@@ -145,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
     // -----------------------------------------------------------
     //                      EXITING
     // -----------------------------------------------------------
+    @DebugLog
     public void startAuthenticatorActivity() {
         Intent intent = new Intent(this, AuthenticatorActivity.class);
         startActivity(intent);
