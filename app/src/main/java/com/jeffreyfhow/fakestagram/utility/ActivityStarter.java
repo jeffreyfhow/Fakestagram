@@ -18,10 +18,4 @@ public class ActivityStarter {
         currActivity.startActivity(intent);
     }
 
-    @DebugLog
-    public static void startAuthenticatorActivity(Activity currActivity) {
-        Intent intent = new Intent(currActivity, AuthenticatorActivity.class);
-        currActivity.startActivity(intent);
-    }
-
 }

@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Fakestagram</string>
-    <string name="title_activity_authenticator">AuthenticatorActivity</string>
+    <string name="title_activity_authenticator">Sign In</string>
 </resources>

@@ -3,6 +3,7 @@ package com.jeffreyfhow.fakestagram;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +14,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity;
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.data.PostAdapter;
-import com.jeffreyfhow.fakestagram.network.NetworkRequester;
+import com.jeffreyfhow.fakestagram.network.requester.NetworkRequesterOkHttp;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -26,11 +30,16 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import hugo.weaving.DebugLog;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Main Scene where all the functionality happens
  */
 public class MainActivity extends AppCompatActivity {
+    private Disposable networkDisposable;
 
     private String mTokenId;
     private ArrayList<Post> mPosts;
@@ -44,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private PostAdapter adapter;
     int detailIdx = -1;
 
-    private NetworkRequester networkRequester;
+    private NetworkRequesterOkHttp networkRequester;
 
     // -----------------------------------------------------------
     //                      INITIALIZATION
@@ -62,7 +71,22 @@ public class MainActivity extends AppCompatActivity {
 
         mTokenId = getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE);
 
-        networkRequester = new NetworkRequester(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpConnectionHandling();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        networkDisposable.dispose();
+    }
+
+    public void startPosts(){
+        networkRequester = new NetworkRequesterOkHttp(this);
         networkRequester.sendGetPostsRequest(mTokenId);
 
         Log.v("MainActivity", "Token: " + mTokenId);
@@ -76,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(gridLayoutManager);
-
     }
 
     @DebugLog
@@ -201,5 +224,23 @@ public class MainActivity extends AppCompatActivity {
 
         Picasso.get().load(profileURL).into(target);
 
+    }
+
+    @DebugLog
+    public void setUpConnectionHandling(){
+        networkDisposable = ReactiveNetwork.observeNetworkConnectivity(getApplicationContext())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Consumer<Connectivity>() {
+                @Override public void accept(final Connectivity connectivity) {
+                    NetworkInfo.State networkState = connectivity.getState();
+                    if (networkState == NetworkInfo.State.CONNECTED) {
+                        startPosts();
+                    } else {
+//                        Toast.makeText(MainActivity.this, networkState.toString(), Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }
+            });
     }
 }
