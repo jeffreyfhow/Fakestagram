@@ -3,7 +3,7 @@ package com.jeffreyfhow.fakestagram.utility;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.jeffreyfhow.fakestagram.MainActivity;
+import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Constants;
 
 import hugo.weaving.DebugLog;

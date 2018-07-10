@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram;
+package com.jeffreyfhow.fakestagram.mainactivity;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity;
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
+import com.jeffreyfhow.fakestagram.R;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.data.PostAdapter;
@@ -31,6 +32,7 @@ import java.util.Comparator;
 
 import hugo.weaving.DebugLog;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
@@ -39,7 +41,9 @@ import io.reactivex.schedulers.Schedulers;
  * Main Scene where all the functionality happens
  */
 public class MainActivity extends AppCompatActivity {
-    private Disposable networkDisposable;
+
+    private MainActivityViewModel mainActivityViewModel;
+    private CompositeDisposable compositeDisposable;
 
     private String mTokenId;
     private ArrayList<Post> mPosts;
@@ -69,6 +73,14 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        mainActivityViewModel = new MainActivityViewModel(
+            getApplicationContext(),
+            this,
+            getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE)
+        );
+
+        compositeDisposable = new CompositeDisposable();
+
         mTokenId = getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE);
 
     }
@@ -76,13 +88,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setUpConnectionHandling();
+        compositeDisposable.add(mainActivityViewModel.onConnect().subscribe(
+            connectivity -> startPosts()
+        ));
+        compositeDisposable.add(mainActivityViewModel.onNotConnect().subscribe(
+            connectivity -> finish(),
+            throwable -> Log.d(this.getLocalClassName(), throwable.getMessage())
+        ));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        networkDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     public void startPosts(){
@@ -224,23 +242,5 @@ public class MainActivity extends AppCompatActivity {
 
         Picasso.get().load(profileURL).into(target);
 
-    }
-
-    @DebugLog
-    public void setUpConnectionHandling(){
-        networkDisposable = ReactiveNetwork.observeNetworkConnectivity(getApplicationContext())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Consumer<Connectivity>() {
-                @Override public void accept(final Connectivity connectivity) {
-                    NetworkInfo.State networkState = connectivity.getState();
-                    if (networkState == NetworkInfo.State.CONNECTED) {
-                        startPosts();
-                    } else {
-//                        Toast.makeText(MainActivity.this, networkState.toString(), Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }
-            });
     }
 }

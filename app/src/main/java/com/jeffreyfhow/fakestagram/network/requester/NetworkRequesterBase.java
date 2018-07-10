@@ -1,7 +1,7 @@
 package com.jeffreyfhow.fakestagram.network.requester;
 
 import com.jeffreyfhow.fakestagram.BuildConfig;
-import com.jeffreyfhow.fakestagram.MainActivity;
+import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.network.helper.GsonDeserializerManager;
 import com.jeffreyfhow.fakestagram.network.helper.InterceptorFactory;

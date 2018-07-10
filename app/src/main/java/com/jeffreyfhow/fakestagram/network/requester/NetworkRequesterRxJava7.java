@@ -3,11 +3,10 @@ package com.jeffreyfhow.fakestagram.network.requester;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.jeffreyfhow.fakestagram.MainActivity;
+import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.network.LogOutService;
 import com.jeffreyfhow.fakestagram.network.PostService;
-import com.jeffreyfhow.fakestagram.utility.ActivityStarter;
 
 import java.util.ArrayList;
 
