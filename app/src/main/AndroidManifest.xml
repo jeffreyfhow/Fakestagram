@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AuthenticatorActivity"
+            android:name=".authentication.AuthenticatorActivity"
             android:label="@string/title_activity_authenticator"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">

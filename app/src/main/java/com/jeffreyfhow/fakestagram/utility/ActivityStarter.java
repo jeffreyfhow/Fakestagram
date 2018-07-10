@@ -3,7 +3,6 @@ package com.jeffreyfhow.fakestagram.utility;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.jeffreyfhow.fakestagram.AuthenticatorActivity;
 import com.jeffreyfhow.fakestagram.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Constants;
 
