@@ -3,11 +3,11 @@ package com.jeffreyfhow.fakestagram.mainactivity;
 import android.app.Activity;
 import android.content.Context;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity;
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.jeffreyfhow.fakestagram.data.Post;
-import com.jeffreyfhow.fakestagram.data.PostAdapter;
 import com.jeffreyfhow.fakestagram.network.requester.NetworkRequester;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class MainActivityPresenter implements IPresenter{
         this.activity = activity;
         this.tokenId = tokenId;
         this.mainActivityView = (MainActivity) activity;
-        networkRequester = new NetworkRequester((MainActivity) activity, this);
+        networkRequester = new NetworkRequester(this);
     }
 
     @Override
@@ -137,6 +137,10 @@ public class MainActivityPresenter implements IPresenter{
             networkRequester.sendLikeRequest(tokenId, p.getPostId());
         }
         mainActivityView.refreshState();
+    }
+
+    public void showShortToast(String text){
+        Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show();
     }
 
     public void exit(){

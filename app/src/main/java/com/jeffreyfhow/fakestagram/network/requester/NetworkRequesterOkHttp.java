@@ -1,9 +1,7 @@
 package com.jeffreyfhow.fakestagram.network.requester;
 
 import android.util.Log;
-import android.widget.Toast;
 
-import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
@@ -19,8 +17,8 @@ import retrofit2.Response;
 
 public class NetworkRequesterOkHttp extends NetworkRequesterBase<PostServiceOkHttp, LogOutServiceOkHttp> {
 
-    public NetworkRequesterOkHttp(MainActivity mainActivity, MainActivityPresenter mainActivityPresenter){
-        super(mainActivity, mainActivityPresenter, PostServiceOkHttp.class, LogOutServiceOkHttp.class);
+    public NetworkRequesterOkHttp(MainActivityPresenter mainActivityPresenter){
+        super(mainActivityPresenter, PostServiceOkHttp.class, LogOutServiceOkHttp.class);
     }
 
     @DebugLog
@@ -35,9 +33,9 @@ public class NetworkRequesterOkHttp extends NetworkRequesterBase<PostServiceOkHt
 
             @Override
             public void onFailure(Call<ArrayList<Post>> call, Throwable t) {
-                Toast.makeText(mainActivity, "Error retrieving posts. Please try again.", Toast.LENGTH_SHORT).show();
-                mainActivity.finish();
-                Log.v("MainActivity", t.getMessage());
+                mainActivityPresenter.showShortToast("Error retrieving posts. Please try again.");
+                mainActivityPresenter.exit();
+                Log.v(this.getClass().getSimpleName(), t.getMessage());
             }
         });
     }
@@ -49,12 +47,12 @@ public class NetworkRequesterOkHttp extends NetworkRequesterBase<PostServiceOkHt
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(mainActivity, "Like Posted Response - Success.", Toast.LENGTH_SHORT).show();
+                mainActivityPresenter.showShortToast("Like Posted Response - Success");
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.v("MainActivity", t.getMessage());
+                Log.v(this.getClass().getSimpleName(), t.getMessage());
             }
         });
     }
@@ -66,12 +64,12 @@ public class NetworkRequesterOkHttp extends NetworkRequesterBase<PostServiceOkHt
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(mainActivity, "Like Deleted Response - Success", Toast.LENGTH_SHORT).show();
+                mainActivityPresenter.showShortToast("Like Deleted Response - Success");
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.v("MainActivity", t.getMessage());
+                Log.v(this.getClass().getSimpleName(), t.getMessage());
             }
         });
     }
@@ -83,13 +81,13 @@ public class NetworkRequesterOkHttp extends NetworkRequesterBase<PostServiceOkHt
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                mainActivity.finish();
+                mainActivityPresenter.exit();
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.d(this.getClass().getSimpleName(), t.getMessage());
-                mainActivity.finish();
+                mainActivityPresenter.exit();
             }
         });
     }

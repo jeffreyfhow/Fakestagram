@@ -1,11 +1,9 @@
 package com.jeffreyfhow.fakestagram.network.requester;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
-import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
 import com.jeffreyfhow.fakestagram.network.LogOutService;
 import com.jeffreyfhow.fakestagram.network.PostService;
@@ -21,8 +19,8 @@ import retrofit2.Response;
 
 public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutService> {
 
-    public NetworkRequester(MainActivity mainActivity, MainActivityPresenter mainActivityPresenter){
-        super(mainActivity, mainActivityPresenter, PostService.class, LogOutService.class);
+    public NetworkRequester(MainActivityPresenter mainActivityPresenter){
+        super(mainActivityPresenter, PostService.class, LogOutService.class);
     }
 
     @DebugLog
@@ -38,11 +36,7 @@ public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutSe
                     mainActivityPresenter.initializePosts(posts);
                 },
                 throwable -> {
-                    Toast.makeText(
-                        mainActivity,
-                        "Error retrieving posts. Please try again.",
-                        Toast.LENGTH_SHORT
-                    ).show();
+                    mainActivityPresenter.showShortToast("Error retrieving posts. Please try again.");
                     Log.v(this.getClass().getSimpleName(), throwable.getMessage());
                     mainActivityPresenter.exit();
                 }
@@ -58,7 +52,7 @@ public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutSe
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                aVoid -> Toast.makeText(mainActivity, "Like Posted Response - Success.", Toast.LENGTH_SHORT).show(),
+                aVoid -> mainActivityPresenter.showShortToast("Like Posted Response - Success"),
                 throwable -> Log.v(this.getClass().getSimpleName(), throwable.getMessage())
             );
     }
@@ -71,7 +65,7 @@ public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutSe
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                aVoid -> Toast.makeText(mainActivity, "Like Deleted Response - Success", Toast.LENGTH_SHORT).show(),
+                aVoid -> mainActivityPresenter.showShortToast("Like Deleted Response - Success"),
                 throwable -> Log.v(this.getClass().getSimpleName(), throwable.getMessage())
             );
     }

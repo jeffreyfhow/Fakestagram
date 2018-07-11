@@ -1,7 +1,6 @@
 package com.jeffreyfhow.fakestagram.network.requester;
 
 import com.jeffreyfhow.fakestagram.BuildConfig;
-import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
 import com.jeffreyfhow.fakestagram.network.helper.GsonDeserializerManager;
@@ -23,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Abstract base class that sets up shared functionality of its subclasses.
  */
 public abstract class NetworkRequesterBase<PS, LS> implements INetworkRequester{
-    protected MainActivity mainActivity;
+
     protected MainActivityPresenter mainActivityPresenter;
 
     private Class<PS> psClass;
@@ -33,13 +32,10 @@ public abstract class NetworkRequesterBase<PS, LS> implements INetworkRequester{
     protected LS logOutService;
 
     public NetworkRequesterBase(
-        MainActivity mainActivity,
         MainActivityPresenter mainActivityPresenter,
         Class<PS> psClass,
         Class<LS> lsClass
     ){
-
-        this.mainActivity = mainActivity;
         this.mainActivityPresenter = mainActivityPresenter;
         this.psClass = psClass;
         this.lsClass = lsClass;
