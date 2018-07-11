@@ -112,10 +112,34 @@ public class MainActivityPresenter implements IPresenter{
             posts.get(pos),
             position -> {
                 if (detailIdx >= 0) {
-//                    tryLikePhoto(detailIdx);
+                    tryLikePhoto(detailIdx);
                 }
             },
             true
         );
+    }
+    
+    public void logOut(){
+        networkRequester.logOut();
+    }
+
+    private void tryLikePhoto(int pos) {
+        Post p = posts.get(pos);
+        boolean hasLiked = p.getUserHasLiked();
+        long likeCnt = p.getLikeCnt();
+        if (hasLiked) {
+            p.setUserHasLiked(false);
+            p.setLikeCnt(--likeCnt);
+            networkRequester.sendUnlikeRequest(tokenId, p.getPostId());
+        } else {
+            p.setUserHasLiked(true);
+            p.setLikeCnt(++likeCnt);
+            networkRequester.sendLikeRequest(tokenId, p.getPostId());
+        }
+        mainActivityView.refreshState();
+    }
+
+    public void exit(){
+        mainActivityView.exit();
     }
 }

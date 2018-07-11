@@ -16,16 +16,11 @@ import android.view.MenuItem;
 
 import com.jeffreyfhow.fakestagram.R;
 import com.jeffreyfhow.fakestagram.data.Constants;
-import com.jeffreyfhow.fakestagram.data.LayoutType;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.data.PostAdapter;
-import com.jeffreyfhow.fakestagram.network.requester.NetworkRequester;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import hugo.weaving.DebugLog;
@@ -39,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
     private MainActivityPresenter presenter;
     private CompositeDisposable compositeDisposable;
 
-    private String mTokenId;
-    private ArrayList<Post> mPosts;
     private RecyclerView recyclerView;
     private boolean mIsDetailView = false;
     private Menu menu;
@@ -48,10 +41,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
     private GridLayoutManager gridLayoutManager;
     private LinearLayoutManager linearLayoutManager;
     private PostAdapter adapter;
-
-
-    private NetworkRequester networkRequester;
-
 
     //region Android Lifecycle
     @Override
@@ -72,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
         );
 
         compositeDisposable = new CompositeDisposable();
-
-        mTokenId = getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE);
 
         recyclerView = findViewById(R.id.post_recycler_view);
         adapter = new PostAdapter(this);
@@ -128,19 +115,8 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
     }
 
     @DebugLog
-    private void tryLikePhoto(int pos) {
-        Post p = mPosts.get(pos);
-        boolean hasLiked = p.getUserHasLiked();
-        long likeCnt = p.getLikeCnt();
-        if (hasLiked) {
-            p.setUserHasLiked(false);
-            p.setLikeCnt(--likeCnt);
-//            networkRequester.sendUnlikeRequest(mTokenId, p.getPostId());
-        } else {
-            p.setUserHasLiked(true);
-            p.setLikeCnt(++likeCnt);
-//            networkRequester.sendLikeRequest(mTokenId, p.getPostId());
-        }
+    @Override
+    public void refreshState(){
         adapter.notifyDataSetChanged();
         recyclerView.refreshDrawableState();
     }
@@ -159,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_logout:
-                networkRequester.logOut();
+                presenter.logOut();
                 break;
             case android.R.id.home:
                 onBackPressed();
@@ -173,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
         if (mIsDetailView) {
             presenter.setGridView();
         } else {
-            networkRequester.logOut();
+            presenter.logOut();
         }
     }
 
@@ -200,4 +176,10 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
         Picasso.get().load(profileURL).into(target);
 
     }
+
+    @Override
+    public void exit() {
+        finish();
+    }
+
 }

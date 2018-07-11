@@ -4,8 +4,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.jeffreyfhow.fakestagram.data.Constants;
-import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Post;
+import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
 import com.jeffreyfhow.fakestagram.network.LogOutService;
 import com.jeffreyfhow.fakestagram.network.PostService;
@@ -19,7 +19,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
+import retrofit2.Response;
 
 public class NetworkRequesterRxJava7 extends NetworkRequesterBase<PostService, LogOutService> {
 
@@ -69,15 +69,15 @@ public class NetworkRequesterRxJava7 extends NetworkRequesterBase<PostService, L
     @DebugLog
     @Override
     public void sendLikeRequest(String id_token, String id) {
-        Observable<Void> likeObservable = postService.postLike("Bearer " + id_token, id);
+        Observable<Response<Void>> likeObservable = postService.postLike("Bearer " + id_token, id);
 
         Disposable subscription = likeObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Consumer<Void>() {
+                new Consumer<Response<Void>>() {
                     @Override
-                    public void accept(Void aVoid) throws Exception {
+                    public void accept(Response<Void>  voidResponse) throws Exception {
                         Toast.makeText(mainActivity, "Like Posted Response - Success.", Toast.LENGTH_SHORT).show();
                     }
                 },
@@ -102,14 +102,14 @@ public class NetworkRequesterRxJava7 extends NetworkRequesterBase<PostService, L
     @DebugLog
     @Override
     public void sendUnlikeRequest(String id_token, String id) {
-        Observable<Void> unlikeObservable = postService.deleteLike("Bearer " + id_token, id);
+        Observable<Response<Void>> unlikeObservable = postService.deleteLike("Bearer " + id_token, id);
         Disposable subscription = unlikeObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Consumer<Void>() {
+                new Consumer<Response<Void>>() {
                     @Override
-                    public void accept(Void aVoid) throws Exception {
+                    public void accept(Response<Void> voidResponse) throws Exception {
                         Toast.makeText(mainActivity, "Like Deleted Response - Success", Toast.LENGTH_SHORT).show();
                     }
                 },
@@ -134,14 +134,14 @@ public class NetworkRequesterRxJava7 extends NetworkRequesterBase<PostService, L
     @DebugLog
     @Override
     public void logOut() {
-        Observable<Void> logOutObservable = logOutService.logOut(Constants.LOGOUT_URL);
+        Observable<Response<Void>> logOutObservable = logOutService.logOut(Constants.LOGOUT_URL);
         Disposable subscription = logOutObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Consumer<Void>() {
+                new Consumer<Response<Void>>() {
                     @Override
-                    public void accept(Void aVoid) throws Exception {
+                    public void accept(Response<Void> voidResponse) throws Exception {
                         mainActivity.finish();
                     }
                 },

@@ -9,4 +9,6 @@ public interface IMainActivityView {
     void displayGridView(List<Post> posts, PostAdapter.Listener listener, boolean hasRecencyText);
     void displayDetailView(Post post, PostAdapter.Listener listener, boolean hasRecencyText);
     void setUserIcon(String profileUrl);
+    void refreshState();
+    void exit();
 }

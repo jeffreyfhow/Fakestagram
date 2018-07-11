@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import io.reactivex.Observable;
 
+import retrofit2.Response;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -19,14 +20,14 @@ public interface PostService {
     );
 
     @POST("Prod/media/{id}/likes")
-    Observable<Void> postLike(
+    Observable<Response<Void>> postLike(
         @Header("Authorization") String authorization,
-        @Path(value = "id") String id
+        @Path(value = "id", encoded = true) String id
     );
 
     @DELETE("Prod/media/{id}/likes")
-    Observable<Void> deleteLike(
+    Observable<Response<Void>> deleteLike(
         @Header("Authorization") String authorization,
-        @Path(value = "id") String id
+        @Path(value = "id", encoded = true) String id
     );
 }
