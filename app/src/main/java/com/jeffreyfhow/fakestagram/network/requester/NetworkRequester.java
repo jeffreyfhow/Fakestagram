@@ -5,8 +5,8 @@ import android.util.Log;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
-import com.jeffreyfhow.fakestagram.network.LogOutService;
-import com.jeffreyfhow.fakestagram.network.PostService;
+import com.jeffreyfhow.fakestagram.network.service.LogOutService;
+import com.jeffreyfhow.fakestagram.network.service.PostService;
 
 import java.util.ArrayList;
 
@@ -28,7 +28,7 @@ public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutSe
     public void sendGetPostsRequest(String id_token) {
         Observable<ArrayList<Post>> postsObservable = postService.getAllPosts(id_token);
 
-        Disposable subscription = postsObservable
+        Disposable disposable = postsObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -61,7 +61,7 @@ public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutSe
     @Override
     public void sendUnlikeRequest(String id_token, String id) {
         Observable<Response<Void>> unlikeObservable = postService.deleteLike("Bearer " + id_token, id);
-        Disposable subscription = unlikeObservable
+        Disposable disposable = unlikeObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -74,7 +74,7 @@ public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutSe
     @Override
     public void logOut() {
         Observable<Response<Void>> logOutObservable = logOutService.logOut(Constants.LOGOUT_URL);
-        Disposable subscription = logOutObservable
+        Disposable disposable = logOutObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(

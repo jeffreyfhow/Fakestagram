@@ -16,7 +16,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
  */
 public class InterceptorFactory {
     public static Interceptor createHttpLoggingInterceptor(HttpLoggingInterceptor.Level level){
-
         return new HttpLoggingInterceptor().setLevel(level);
     }
 

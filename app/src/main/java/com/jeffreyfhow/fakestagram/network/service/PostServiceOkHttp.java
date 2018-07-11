@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram.network;
+package com.jeffreyfhow.fakestagram.network.service;
 
 import com.jeffreyfhow.fakestagram.data.Post;
 

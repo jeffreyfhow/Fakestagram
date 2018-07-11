@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram.network;
+package com.jeffreyfhow.fakestagram.network.service;
 
 import io.reactivex.Observable;
 import retrofit2.Response;

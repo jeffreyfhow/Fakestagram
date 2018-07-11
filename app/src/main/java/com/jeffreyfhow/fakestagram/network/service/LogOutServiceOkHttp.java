@@ -1,4 +1,4 @@
-package com.jeffreyfhow.fakestagram.network;
+package com.jeffreyfhow.fakestagram.network.service;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

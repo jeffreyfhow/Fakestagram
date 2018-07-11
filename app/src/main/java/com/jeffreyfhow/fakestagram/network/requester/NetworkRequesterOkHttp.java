@@ -5,8 +5,8 @@ import android.util.Log;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
-import com.jeffreyfhow.fakestagram.network.LogOutServiceOkHttp;
-import com.jeffreyfhow.fakestagram.network.PostServiceOkHttp;
+import com.jeffreyfhow.fakestagram.network.service.LogOutServiceOkHttp;
+import com.jeffreyfhow.fakestagram.network.service.PostServiceOkHttp;
 
 import java.util.ArrayList;
 
