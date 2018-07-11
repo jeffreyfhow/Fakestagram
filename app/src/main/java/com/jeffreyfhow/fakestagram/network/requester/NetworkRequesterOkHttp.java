@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.data.Post;
+import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
 import com.jeffreyfhow.fakestagram.network.LogOutServiceOkHttp;
 import com.jeffreyfhow.fakestagram.network.PostServiceOkHttp;
 
@@ -18,8 +19,8 @@ import retrofit2.Response;
 
 public class NetworkRequesterOkHttp extends NetworkRequesterBase<PostServiceOkHttp, LogOutServiceOkHttp> {
 
-    public NetworkRequesterOkHttp(MainActivity mainActivity){
-        super(mainActivity, PostServiceOkHttp.class, LogOutServiceOkHttp.class);
+    public NetworkRequesterOkHttp(MainActivity mainActivity, MainActivityPresenter mainActivityPresenter){
+        super(mainActivity, mainActivityPresenter, PostServiceOkHttp.class, LogOutServiceOkHttp.class);
     }
 
     @DebugLog
@@ -29,7 +30,7 @@ public class NetworkRequesterOkHttp extends NetworkRequesterBase<PostServiceOkHt
         call.enqueue(new Callback<ArrayList<Post>>() {
             @Override
             public void onResponse(Call<ArrayList<Post>> call, Response<ArrayList<Post>> response) {
-                mainActivity.initializePosts(response.body());
+                mainActivityPresenter.initializePosts(response.body());
             }
 
             @Override

@@ -61,7 +61,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         postList.clear();
         postList.add(newItem);
         notifyDataSetChanged();
-
     }
 
     public void setListener(Listener listener){

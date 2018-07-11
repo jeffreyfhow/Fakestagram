@@ -3,7 +3,6 @@ package com.jeffreyfhow.fakestagram.mainactivity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,54 +13,47 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity;
-import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.jeffreyfhow.fakestagram.R;
 import com.jeffreyfhow.fakestagram.data.Constants;
+import com.jeffreyfhow.fakestagram.data.LayoutType;
 import com.jeffreyfhow.fakestagram.data.Post;
 import com.jeffreyfhow.fakestagram.data.PostAdapter;
-import com.jeffreyfhow.fakestagram.network.requester.NetworkRequesterOkHttp;
+import com.jeffreyfhow.fakestagram.network.requester.NetworkRequester;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import hugo.weaving.DebugLog;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Main Scene where all the functionality happens
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IMainActivityView {
 
-    private MainActivityViewModel mainActivityViewModel;
+    private MainActivityPresenter presenter;
     private CompositeDisposable compositeDisposable;
 
     private String mTokenId;
     private ArrayList<Post> mPosts;
     private RecyclerView recyclerView;
     private boolean mIsDetailView = false;
-    private String profileURL;
     private Menu menu;
 
     private GridLayoutManager gridLayoutManager;
     private LinearLayoutManager linearLayoutManager;
     private PostAdapter adapter;
-    int detailIdx = -1;
 
-    private NetworkRequesterOkHttp networkRequester;
 
-    // -----------------------------------------------------------
-    //                      INITIALIZATION
-    // -----------------------------------------------------------
+    private NetworkRequester networkRequester;
+
+
+    //region Android Lifecycle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -73,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        mainActivityViewModel = new MainActivityViewModel(
+        presenter = new MainActivityPresenter(
             getApplicationContext(),
             this,
             getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE)
@@ -83,15 +75,23 @@ public class MainActivity extends AppCompatActivity {
 
         mTokenId = getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE);
 
+        recyclerView = findViewById(R.id.post_recycler_view);
+        adapter = new PostAdapter(this);
+        recyclerView.setAdapter(adapter);
+        gridLayoutManager = new GridLayoutManager(this, 2);
+
+        linearLayoutManager = new LinearLayoutManager(this);
+
+        recyclerView.setLayoutManager(gridLayoutManager);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        compositeDisposable.add(mainActivityViewModel.onConnect().subscribe(
-            connectivity -> startPosts()
+        compositeDisposable.add(presenter.onConnect().subscribe(
+            connectivity -> presenter.requestPosts()
         ));
-        compositeDisposable.add(mainActivityViewModel.onNotConnect().subscribe(
+        compositeDisposable.add(presenter.onNotConnect().subscribe(
             connectivity -> finish(),
             throwable -> Log.d(this.getLocalClassName(), throwable.getMessage())
         ));
@@ -102,73 +102,29 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         compositeDisposable.clear();
     }
-
-    public void startPosts(){
-        networkRequester = new NetworkRequesterOkHttp(this);
-        networkRequester.sendGetPostsRequest(mTokenId);
-
-        Log.v("MainActivity", "Token: " + mTokenId);
-
-        recyclerView = findViewById(R.id.post_recycler_view);
-
-        adapter = new PostAdapter(this);
-        recyclerView.setAdapter(adapter);
-        gridLayoutManager = new GridLayoutManager(this, 2);
-
-        linearLayoutManager = new LinearLayoutManager(this);
-
-        recyclerView.setLayoutManager(gridLayoutManager);
-    }
-
-    @DebugLog
-    public void initializePosts(ArrayList<Post> posts){
-        mPosts = posts;
-
-        profileURL = mPosts.get(0).getProfilePictureUrl();
-        setUserIcon();
-        Collections.sort(mPosts, new Comparator<Post>() {
-            @Override
-            public int compare(Post p1, Post p2) {
-                return p1.getDateCreated().isAfter(p2.getDateCreated()) ? -1 : 1;
-            }
-        });
-
-        displayGridView();
-    }
+    //endregion
 
     // -----------------------------------------------------------
     //                    FUNCTIONALITY
     // -----------------------------------------------------------
     @DebugLog
-    private void displayGridView() {
+    @Override
+    public void displayGridView(List<Post> posts, PostAdapter.Listener listener, boolean hasRecencyText) {
         mIsDetailView = false;
         recyclerView.setLayoutManager(gridLayoutManager);
-        adapter.setHasRecencyText(false);
-        adapter.update(mPosts);
-        adapter.setListener(new PostAdapter.Listener() {
-            @Override
-            public void onClick(int position) {
-                displayDetailView(position);
-            }
-        });
+        adapter.setHasRecencyText(hasRecencyText);
+        adapter.update(posts);
+        adapter.setListener(listener);
     }
 
     @DebugLog
-    private void displayDetailView(final int pos) {
+    @Override
+    public void displayDetailView(Post post, PostAdapter.Listener listener, boolean hasRecencyText) {
         mIsDetailView = true;
-
-        adapter.setHasRecencyText(true);
+        adapter.setHasRecencyText(hasRecencyText);
         recyclerView.setLayoutManager(linearLayoutManager);
-        detailIdx = pos;
-        adapter.update(mPosts.get(pos));
-        adapter.setListener(new PostAdapter.Listener() {
-            @Override
-            public void onClick(int position) {
-                if(detailIdx >= 0){
-                    tryLikePhoto(detailIdx);
-                }
-            }
-        });
+        adapter.update(post);
+        adapter.setListener(listener);
     }
 
     @DebugLog
@@ -179,11 +135,11 @@ public class MainActivity extends AppCompatActivity {
         if (hasLiked) {
             p.setUserHasLiked(false);
             p.setLikeCnt(--likeCnt);
-            networkRequester.sendUnlikeRequest(mTokenId, p.getPostId());
+//            networkRequester.sendUnlikeRequest(mTokenId, p.getPostId());
         } else {
             p.setUserHasLiked(true);
             p.setLikeCnt(++likeCnt);
-            networkRequester.sendLikeRequest(mTokenId, p.getPostId());
+//            networkRequester.sendLikeRequest(mTokenId, p.getPostId());
         }
         adapter.notifyDataSetChanged();
         recyclerView.refreshDrawableState();
@@ -215,13 +171,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mIsDetailView) {
-            displayGridView();
+            presenter.setGridView();
         } else {
             networkRequester.logOut();
         }
     }
 
-    private void setUserIcon() {
+    @Override
+    public void setUserIcon(String profileURL) {
 
         Target target = new Target() {
             @Override

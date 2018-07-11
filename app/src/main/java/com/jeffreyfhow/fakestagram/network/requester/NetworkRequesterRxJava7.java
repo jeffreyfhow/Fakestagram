@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.jeffreyfhow.fakestagram.data.Constants;
 import com.jeffreyfhow.fakestagram.mainactivity.MainActivity;
 import com.jeffreyfhow.fakestagram.data.Post;
+import com.jeffreyfhow.fakestagram.mainactivity.MainActivityPresenter;
 import com.jeffreyfhow.fakestagram.network.LogOutService;
 import com.jeffreyfhow.fakestagram.network.PostService;
 
@@ -22,8 +23,8 @@ import retrofit2.Call;
 
 public class NetworkRequesterRxJava7 extends NetworkRequesterBase<PostService, LogOutService> {
 
-    public NetworkRequesterRxJava7(MainActivity mainActivity){
-        super(mainActivity, PostService.class, LogOutService.class);
+    public NetworkRequesterRxJava7(MainActivity mainActivity, MainActivityPresenter mainActivityPresenter){
+        super(mainActivity, mainActivityPresenter, PostService.class, LogOutService.class);
     }
 
     @DebugLog
@@ -38,7 +39,7 @@ public class NetworkRequesterRxJava7 extends NetworkRequesterBase<PostService, L
                 new Consumer<ArrayList<Post>>() {
                     @Override
                     public void accept(ArrayList<Post> posts) throws Exception {
-                        mainActivity.initializePosts(posts);
+                        mainActivityPresenter.initializePosts(posts);
                     }
                 },
                 new Consumer<Throwable>() {
