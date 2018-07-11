@@ -13,22 +13,24 @@ import java.util.ArrayList;
 import hugo.weaving.DebugLog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutService> {
 
+    private CompositeDisposable compositeDisposable;
+
     public NetworkRequester(MainActivityPresenter mainActivityPresenter){
         super(mainActivityPresenter, PostService.class, LogOutService.class);
+        compositeDisposable = new CompositeDisposable();
     }
 
     @DebugLog
     @Override
     public void sendGetPostsRequest(String id_token) {
         Observable<ArrayList<Post>> postsObservable = postService.getAllPosts(id_token);
-
-        Disposable disposable = postsObservable
+        compositeDisposable.add(postsObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -40,46 +42,54 @@ public class NetworkRequester extends NetworkRequesterBase<PostService, LogOutSe
                     Log.v(this.getClass().getSimpleName(), throwable.getMessage());
                     mainActivityPresenter.exit();
                 }
-            );
+            )
+        );
     }
 
     @DebugLog
     @Override
     public void sendLikeRequest(String id_token, String id) {
         Observable<Response<Void>> likeObservable = postService.postLike("Bearer " + id_token, id);
-
-        Disposable disposable = likeObservable
+        compositeDisposable.add(likeObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 aVoid -> mainActivityPresenter.showShortToast("Like Posted Response - Success"),
                 throwable -> Log.v(this.getClass().getSimpleName(), throwable.getMessage())
-            );
+            )
+        );
     }
 
     @DebugLog
     @Override
     public void sendUnlikeRequest(String id_token, String id) {
         Observable<Response<Void>> unlikeObservable = postService.deleteLike("Bearer " + id_token, id);
-        Disposable disposable = unlikeObservable
+        compositeDisposable.add(unlikeObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 aVoid -> mainActivityPresenter.showShortToast("Like Deleted Response - Success"),
                 throwable -> Log.v(this.getClass().getSimpleName(), throwable.getMessage())
-            );
+            )
+        );
     }
 
     @DebugLog
     @Override
     public void logOut() {
         Observable<Response<Void>> logOutObservable = logOutService.logOut(Constants.LOGOUT_URL);
-        Disposable disposable = logOutObservable
+        compositeDisposable.add(logOutObservable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 aVoid -> mainActivityPresenter.exit(),
                 throwable -> mainActivityPresenter.exit()
-            );
+            )
+        );
+    }
+
+    @DebugLog
+    public void dispose() {
+        compositeDisposable.dispose();
     }
 }

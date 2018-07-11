@@ -24,25 +24,22 @@ import com.squareup.picasso.Target;
 import java.util.List;
 
 import hugo.weaving.DebugLog;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Main Scene where all the functionality happens
  */
 public class MainActivity extends AppCompatActivity implements IMainActivityView {
 
-    private MainActivityPresenter presenter;
-    private CompositeDisposable compositeDisposable;
+    private IMainActivityPresenter presenter;
 
     private RecyclerView recyclerView;
-    private boolean mIsDetailView = false;
     private Menu menu;
 
     private GridLayoutManager gridLayoutManager;
     private LinearLayoutManager linearLayoutManager;
     private PostAdapter adapter;
 
-    //region Android Lifecycle
+    //region Android Lifecycle Overrides
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -54,50 +51,39 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        presenter = new MainActivityPresenter(
+        presenter = new MainActivityPresenter();
+        presenter.onCreate(
             getApplicationContext(),
             this,
             getIntent().getStringExtra(Constants.ID_TOKEN_MESSAGE)
         );
 
-        compositeDisposable = new CompositeDisposable();
-
         recyclerView = findViewById(R.id.post_recycler_view);
         adapter = new PostAdapter(this);
         recyclerView.setAdapter(adapter);
         gridLayoutManager = new GridLayoutManager(this, 2);
-
         linearLayoutManager = new LinearLayoutManager(this);
-
         recyclerView.setLayoutManager(gridLayoutManager);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        compositeDisposable.add(presenter.onConnect().subscribe(
-            connectivity -> presenter.requestPosts()
-        ));
-        compositeDisposable.add(presenter.onNotConnect().subscribe(
-            connectivity -> finish(),
-            throwable -> Log.d(this.getLocalClassName(), throwable.getMessage())
-        ));
+        presenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        compositeDisposable.clear();
+        presenter.onPause();
     }
     //endregion
 
-    // -----------------------------------------------------------
-    //                    FUNCTIONALITY
-    // -----------------------------------------------------------
+
+    //region IMainActivityView Overrides
     @DebugLog
     @Override
     public void displayGridView(List<Post> posts, PostAdapter.Listener listener, boolean hasRecencyText) {
-        mIsDetailView = false;
         recyclerView.setLayoutManager(gridLayoutManager);
         adapter.setHasRecencyText(hasRecencyText);
         adapter.update(posts);
@@ -107,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
     @DebugLog
     @Override
     public void displayDetailView(Post post, PostAdapter.Listener listener, boolean hasRecencyText) {
-        mIsDetailView = true;
         adapter.setHasRecencyText(hasRecencyText);
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter.update(post);
@@ -121,38 +106,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
         recyclerView.refreshDrawableState();
     }
 
-    // -----------------------------------------------------------
-    //                      TOOLBAR MENU
-    // -----------------------------------------------------------
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        this.menu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_logout:
-                presenter.logOut();
-                break;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mIsDetailView) {
-            presenter.setGridView();
-        } else {
-            presenter.logOut();
-        }
-    }
-
+    @DebugLog
     @Override
     public void setUserIcon(String profileURL) {
 
@@ -174,12 +128,41 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
         };
 
         Picasso.get().load(profileURL).into(target);
-
     }
 
+    @DebugLog
     @Override
     public void exit() {
         finish();
     }
+    //endregion
+
+
+    //region Toolbar Overrides
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        this.menu = menu;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_logout:
+                presenter.onLogoutButtonPressed();
+                break;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        presenter.onBackPressed();
+    }
+    //endregion
 
 }

@@ -10,6 +10,7 @@ import com.jeffreyfhow.fakestagram.R;
 import com.jeffreyfhow.fakestagram.data.WebViewData;
 
 import hugo.weaving.DebugLog;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 /**
@@ -20,8 +21,8 @@ public class AuthenticatorActivity extends AppCompatActivity {
     private WebView webView;
 
     private AuthenticatorActivityViewModel authenticatorActivityViewModel;
-    private Disposable webViewDisposable;
-    private Disposable connectivityDisposable;
+
+    private CompositeDisposable compositeDisposable;
 
     //region Activity Lifecycle
     @Override
@@ -34,24 +35,25 @@ public class AuthenticatorActivity extends AppCompatActivity {
             getApplicationContext(),
             this
         );
+
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        webViewDisposable = authenticatorActivityViewModel.onConnect().subscribe(
+        compositeDisposable.add(authenticatorActivityViewModel.onConnect().subscribe(
             data -> setWebView(data)
-        );
-        connectivityDisposable = authenticatorActivityViewModel.onNotConnect().subscribe(
+        ));
+        compositeDisposable.add(authenticatorActivityViewModel.onNotConnect().subscribe(
             data -> showToast(data)
-        );
+        ));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        webViewDisposable.dispose();
-        connectivityDisposable.dispose();
+        compositeDisposable.dispose();
     }
     //endregion
 
