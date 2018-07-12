@@ -25,6 +25,7 @@ public class AuthenticatorActivityViewModel {
 
     private Context applicationContext;
     private WebViewData webViewData;
+    private boolean isConnected = false;
 
     @DebugLog
     public AuthenticatorActivityViewModel(Context applicationContext, Activity activity){
@@ -58,7 +59,10 @@ public class AuthenticatorActivityViewModel {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .filter(ConnectivityPredicate.hasState(NetworkInfo.State.CONNECTED))
-            .map(x -> webViewData);
+            .map(x -> {
+                isConnected = true;
+                return webViewData;
+            });
     }
 
     @DebugLog
@@ -67,7 +71,10 @@ public class AuthenticatorActivityViewModel {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .filter(c -> c.getState() != NetworkInfo.State.CONNECTED)
-            .map(data -> Constants.CONNECT_TO_INTERNET);
+            .map(data -> {
+                isConnected = false;
+                return Constants.CONNECT_TO_INTERNET;
+            });
     }
     //endregion
 
@@ -91,4 +98,12 @@ public class AuthenticatorActivityViewModel {
         return result;
     }
     //endregion
+
+    public boolean getIsConnected(){
+        return isConnected;
+    }
+
+    public WebViewData getWebViewData() {
+        return webViewData;
+    }
 }

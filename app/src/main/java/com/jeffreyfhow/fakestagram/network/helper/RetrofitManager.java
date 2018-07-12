@@ -27,7 +27,7 @@ public class RetrofitManager {
         return instance;
     }
 
-    public Retrofit createRetrofit(
+    public Retrofit createOrGetRetrofit(
         String baseUrl,
         OkHttpClient okHttpClient,
         CallAdapter.Factory callAdapterFactory,
@@ -35,7 +35,7 @@ public class RetrofitManager {
     ){
 
         if(retrofits.containsKey(baseUrl)){
-            return null;
+            return retrofits.get(baseUrl);
         }
 
         Retrofit r = new Retrofit.Builder()

@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityView
     }
     //endregion
 
-
     //region IMainActivityView Overrides
     @DebugLog
     @Override

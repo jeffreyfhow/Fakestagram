@@ -73,14 +73,14 @@ public abstract class NetworkRequesterBase<PS, LS> implements INetworkRequester{
         RxJava2CallAdapterFactory callAdapterFactory = RxJava2CallAdapterFactory.create();
 
         // 5. Create Post Retrofit Client
-        Retrofit postRetrofit = RetrofitManager.getInstance().createRetrofit(
+        Retrofit postRetrofit = RetrofitManager.getInstance().createOrGetRetrofit(
             Constants.DATA_URL,
             logOkHttpClient,
             callAdapterFactory,
             GsonConverterFactory.create(GsonDeserializerManager.getPostSearchGson())
         );
 
-        Retrofit logOutRetrofit = RetrofitManager.getInstance().createRetrofit(
+        Retrofit logOutRetrofit = RetrofitManager.getInstance().createOrGetRetrofit(
             Constants.LOGIN_URL,
             queryOkHttpClient,
             callAdapterFactory,

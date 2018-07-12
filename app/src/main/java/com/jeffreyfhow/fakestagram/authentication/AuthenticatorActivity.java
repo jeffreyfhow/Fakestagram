@@ -39,17 +39,26 @@ public class AuthenticatorActivity extends AppCompatActivity {
         compositeDisposable = new CompositeDisposable();
     }
 
+    @DebugLog
     @Override
     protected void onResume() {
         super.onResume();
-        compositeDisposable.add(authenticatorActivityViewModel.onConnect().subscribe(
-            data -> setWebView(data)
-        ));
+        if(authenticatorActivityViewModel.getIsConnected()){
+            setWebView(authenticatorActivityViewModel.getWebViewData());
+        } else {
+            compositeDisposable.add(authenticatorActivityViewModel.onConnect().subscribe(
+                data -> {
+                    Toast.makeText(AuthenticatorActivity.this, "asdfasd", Toast.LENGTH_SHORT).show();
+                    setWebView(data);
+                }
+            ));
+        }
         compositeDisposable.add(authenticatorActivityViewModel.onNotConnect().subscribe(
             data -> showToast(data)
         ));
     }
 
+    @DebugLog
     @Override
     protected void onPause() {
         super.onPause();
