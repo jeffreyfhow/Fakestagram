@@ -79,7 +79,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         Post currentPost = postList.get(position);
 
-        holder.likesTextView.setText(currentPost.getLikeCnt() + " Likes");
+        long numLikes = currentPost.getLikeCnt();
+        if(currentPost.getUserHasLiked()){
+            numLikes++;
+        }
+        holder.likesTextView.setText(numLikes + " Likes");
 
         if(getItemCount() == 1){
             holder.durationTextView.setVisibility(View.VISIBLE);

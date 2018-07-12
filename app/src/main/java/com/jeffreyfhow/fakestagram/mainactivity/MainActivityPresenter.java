@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity;
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.jeffreyfhow.fakestagram.data.Post;
+import com.jeffreyfhow.fakestagram.data.PostAdapter;
 import com.jeffreyfhow.fakestagram.network.requester.NetworkRequester;
 
 import java.util.ArrayList;
@@ -144,14 +145,11 @@ public class MainActivityPresenter implements IMainActivityPresenter {
     private void tryLikePhoto(int pos) {
         Post p = posts.get(pos);
         boolean hasLiked = p.getUserHasLiked();
-        long likeCnt = p.getLikeCnt();
         if (hasLiked) {
             p.setUserHasLiked(false);
-            p.setLikeCnt(--likeCnt);
             networkRequester.sendUnlikeRequest(tokenId, p.getPostId());
         } else {
             p.setUserHasLiked(true);
-            p.setLikeCnt(++likeCnt);
             networkRequester.sendLikeRequest(tokenId, p.getPostId());
         }
         mainActivityView.refreshState();
