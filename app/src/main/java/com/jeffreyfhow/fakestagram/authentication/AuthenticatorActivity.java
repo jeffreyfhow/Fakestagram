@@ -48,7 +48,6 @@ public class AuthenticatorActivity extends AppCompatActivity {
         } else {
             compositeDisposable.add(authenticatorActivityViewModel.onConnect().subscribe(
                 data -> {
-                    Toast.makeText(AuthenticatorActivity.this, "asdfasd", Toast.LENGTH_SHORT).show();
                     setWebView(data);
                 }
             ));

@@ -36,9 +36,25 @@ public class MainActivityPresenter implements IMainActivityPresenter {
     private int detailIdx = -1;
     private boolean isDetailView = false;
 
+    private Comparator<Post> postsComparator;
+
     public MainActivityPresenter(){
         networkRequester = new NetworkRequester(this);
         compositeDisposable = new CompositeDisposable();
+        postsComparator = new Comparator<Post>() {
+            @Override
+            public int compare(Post p1, Post p2) {
+                int numLike1 = p1.getLikeCnt().intValue();
+                if(p1.getUserHasLiked()){
+                    numLike1++;
+                }
+                int numLike2 = p2.getLikeCnt().intValue();
+                if(p2.getUserHasLiked()){
+                    numLike2++;
+                }
+                return numLike1 - numLike2;
+            }
+        };
     }
 
     //region IMainActivityPresenter Overrides
@@ -105,12 +121,7 @@ public class MainActivityPresenter implements IMainActivityPresenter {
 
         this.posts = posts;
 
-        Collections.sort(this.posts, new Comparator<Post>() {
-            @Override
-            public int compare(Post p1, Post p2) {
-                return p1.getDateCreated().isAfter(p2.getDateCreated()) ? -1 : 1;
-            }
-        });
+        Collections.sort(this.posts, postsComparator);
 
         mainActivityView.setUserIcon(this.posts.get(0).getProfilePictureUrl());
 
@@ -152,6 +163,7 @@ public class MainActivityPresenter implements IMainActivityPresenter {
             p.setUserHasLiked(true);
             networkRequester.sendLikeRequest(tokenId, p.getPostId());
         }
+        Collections.sort(this.posts, postsComparator);
         mainActivityView.refreshState();
     }
     //endregion
